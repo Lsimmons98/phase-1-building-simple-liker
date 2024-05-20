@@ -1,15 +1,48 @@
-// Defining text characters for the empty and full hearts for you to use later.
 const EMPTY_HEART = '♡'
 const FULL_HEART = '♥'
 
-// Your JavaScript code goes here!
+const heartButtonArray = document.querySelectorAll('.like-glyph');
+const modal = document.getElementById('modal');
 
+const hideModal = () => modal.classList.add('hidden');
+const showModal = () => modal.classList.remove('hidden');
 
+const toggleLike = (button) => {
+  if (button.textContent === EMPTY_HEART) {
+    addLike(button);
+  } else {
+    removeLike(button);
+  }
+};
 
+const addLike = (button) => {
+  button.classList.add('activated-heart');
+  button.textContent = FULL_HEART;
+};
 
-//------------------------------------------------------------------------------
-// Don't change the code below: this function mocks the server response
-//------------------------------------------------------------------------------
+const removeLike = (button) => {
+  button.classList.remove('activated-heart');
+  button.textContent = EMPTY_HEART;
+};
+
+const makeServerRequest = (button) => {
+  return mimicServerCall()
+    .then(toggleLike(button))
+    .catch(() => {
+      showModal();
+      setTimeout(hideModal, 3000);
+      toggleLike(button)
+    });
+};
+
+const addLikeEventListenerAll = () => {
+  hideModal()
+  heartButtonArray.forEach(button => {
+    button.addEventListener('click', () => makeServerRequest(button));
+  });
+};
+
+addLikeEventListenerAll();
 
 function mimicServerCall(url="http://mimicServer.example.com", config={}) {
   return new Promise(function(resolve, reject) {
